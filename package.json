@@ -22,6 +22,7 @@
   "homepage": "https://github.com/reyeskevin9767/file-runner-project#readme",
   "dependencies": {
     "caporal": "^1.4.0",
+    "chalk": "^4.1.0",
     "chokidar": "^3.4.1",
     "lodash.debounce": "^4.0.8"
   }
