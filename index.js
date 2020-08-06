@@ -6,6 +6,7 @@ const debounce = require('lodash.debounce');
 const chokidar = require('chokidar');
 const program = require('caporal');
 const fs = require('fs');
+const { spawn } = require('child_process');
 
 //* Framework for command line applications and auto-generated help
 program
@@ -22,16 +23,16 @@ program
 
     // Wait for 100ms after chokidar finishes event
     const start = debounce(() => {
-      console.log('STARTING USERS PROGRAM');
+      // Child Process starts a second program
+      spawn('node', [name], { stdio: 'inherit' });
     }, 100);
 
     // chokidar watches current directory for changes with events
     chokidar
       .watch('.')
-      .on('add', () => start)
-      .on('change', () => start)
-      .on('unlink', () => start);
-    console.log(args);
+      .on('add', start)
+      .on('change', start)
+      .on('unlink', start);
   });
 
 program.parse(process.argv);
