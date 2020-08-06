@@ -11,7 +11,7 @@ const chalk = require('chalk');
 //* Framework for command line applications and auto-generated help
 program
   .version('0.0.1')
-  .argument('[filename]', 'Name of a file to execute')
+  .argument('<filename>', 'filename')
   .action(async ({ filename }) => {
     const name = filename || 'index.js';
 
@@ -24,8 +24,12 @@ program
     // Wait for 100ms after chokidar finishes event to run start
     let proc;
     const start = debounce(() => {
-      if (proc) {
-        proc.kill();
+      try {
+        if (proc) {
+          proc.kill();
+        }
+      } catch (err) {
+        throw new Error(`Error in file running`);
       }
 
       // Child Process starts a second program
@@ -35,7 +39,7 @@ program
 
     // chokidar watches current directory for changes with events
     chokidar
-      .watch('.')
+      .watch('.', { ignored: /\.git.|node_modules/ })
       .on('add', start)
       .on('change', start)
       .on('unlink', start);
