@@ -7,13 +7,23 @@ const program = require('caporal');
 const fs = require('fs');
 const { spawn } = require('child_process');
 const chalk = require('chalk');
+const path = require('path');
 
 //* Framework for command line applications and auto-generated help
 program
   .version('0.0.1')
-  .argument('<filename>', 'filename')
+  .argument('[filename]', 'filename')
   .action(async ({ filename }) => {
     const name = filename || 'index.js';
+
+    if (
+      path.basename(process.cwd()) == 'file-runner-project' &&
+      name != filename
+    ) {
+      throw new Error(
+        `Cannot run command inside own folder without name of file`
+      );
+    }
 
     try {
       await fs.promises.access(name);
@@ -24,12 +34,8 @@ program
     // Wait for 100ms after chokidar finishes event to run start
     let proc;
     const start = debounce(() => {
-      try {
-        if (proc) {
-          proc.kill();
-        }
-      } catch (err) {
-        throw new Error(`Error in file running`);
+      if (proc) {
+        proc.kill();
       }
 
       // Child Process starts a second program
